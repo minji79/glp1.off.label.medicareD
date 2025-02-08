@@ -389,15 +389,14 @@ data dm_ma;
         ma_hha19 ma_hha18 ma_hha17 ma_hha16
         ma_snf19 ma_snf18 ma_snf17 ma_snf16;
 run;
-proc sort data=dm_ma; by BENE_ID diabetes_ma_yr; run;
+data dm_ma; set dm_ma_ip dm_ma_hha; diabetes_ma =1; run;
 
 proc sql;
-    create table dm_ma as
-    select distinct BENE_ID, index_date, diabetes_ma_yr, diabetes_ma
+    create table input.dm_ma as
+    select distinct BENE_ID, index_date, diabetes_ma, diabetes_ma_yr
     from dm_ma
     where diabetes_ma =1;
 quit;
-
 
 * 3. merge with the study population;
 /**************************************************
