@@ -1,22 +1,17 @@
-## start 
+* start; 
 ssh -X c-mkim255-59883@jhpcecms01.jhsph.edu  
 srun --pty --x11 --partition=sas bash
 
+* directory;
 cd /cms01/data/dua/59883/
 cd /users/59883/c-mkim255-59883/
 
 * figure reset;
 mv  .config/chromium/ .config/chromium.aside
 
-## using SAS : it is only available with SAS
+* using SAS;
 module load sas
 csas -WORK /tmp/
-
-## using R
-module load R
-module load rstudio
-rstudio
-* setwd("/cms01/data/dua/59883/part_d_pde/2020/SAS");
 
 /************************************************************************************
 	1. Set library
