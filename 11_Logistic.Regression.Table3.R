@@ -40,7 +40,7 @@ df <- read_sas("studypop.sas7bdat")
 
 
 #####################################################################################
-#     1.    Preprocessing before matching (drop 349 individuals with missing age)
+#     1.    Preprocessing before Analysis (drop 349 individuals with missing age)
 #####################################################################################
 
 # 1. Preprocessing dataset
