@@ -2,8 +2,8 @@
 | Project name : Identify off label use of GLP1 following several definitions
 | Task Purpose : 
 |      0. the first GLP1 fill from 2018 - 2020 (n = 69,115)
-|      1. Exclude MA (n = )
-|      2. Identify possible off-label prescriptions 
+|      1. Exclude MA (n = 52,781)
+|      2. Identify possible off-label prescriptions (n = 1757, 3.33%)
 |      3. Demographics 
 |      3. Clinical characteristics - Comorbidities
 |      4. MA | UM | coverage | Plan characteristics
@@ -72,7 +72,7 @@ proc freq data=input.studypop; table offlabel_df4; run;
 proc freq data=input.studypop; table offlabel_df5; run;
 
 /************************************************************************************
-	2.    Demographics 
+	3.    Demographics 
 ************************************************************************************/
 
 * 1. merge with demo file;
@@ -88,7 +88,7 @@ proc sql;
    select distinct a.*, b.age_at_index, b.BENE_RACE_CD, b.region
    from input.studypop as a left join input.glp1users_pde_17to20_demo as b
    on a.BENE_ID = b.BENE_ID;
-quit; /* 69115 obs */ 
+quit; /* 52781 obs */ 
 
 * 2. age;
 proc ttest data=input.studypop;
