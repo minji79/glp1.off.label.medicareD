@@ -84,6 +84,9 @@ data input.glp1users_pde_17to20_coverage;
   where not_found_flag =1;
 run;
 
+/* NA fill */
+data input.glp1users_beneid_17to20_um; set input.glp1users_beneid_17to20_um; if missing(not_found_flag) then not_found_flag = 0; run;
+
 proc freq data=input.glp1users_pde_17to20_coverage; table not_found_flag; run; /* 6330, 9.16% uncovered */
   
 /************************************************************************************
