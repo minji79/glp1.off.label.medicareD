@@ -1,7 +1,9 @@
 #####################################################################################
 # Project name : Identify off label use of GLP1 following several definitions
 # Task Purpose : 
-#      1. 
+#      1. Preprocessing before matching (drop 349 individuals with missing age)
+#      2. Simple GLM - logistic model with binary outcome (off-label use or not)
+#      3.
 # Final dataset : 
 #       00
 #####################################################################################
@@ -38,7 +40,7 @@ df <- read_sas("studypop.sas7bdat")
 
 
 #####################################################################################
-#     1.    proprocessing before matching (drop 349 individuals with missing age)
+#     1.    Preprocessing before matching (drop 349 individuals with missing age)
 #####################################################################################
 
 # 1. Preprocessing dataset
