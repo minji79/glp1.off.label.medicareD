@@ -5,6 +5,9 @@ srun --pty --x11 --partition=sas bash
 cd /cms01/data/dua/59883/
 cd /users/59883/c-mkim255-59883/
 
+* figure reset;
+mv  .config/chromium/ .config/chromium.aside
+
 ## using SAS : it is only available with SAS
 module load sas
 csas -WORK /tmp/
