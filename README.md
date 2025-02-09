@@ -1,1 +1,1 @@
-### Off-label Use of Glucagon-like Peptide 1 Agonists (GLP-1): Evidence from MEDICARE PART D
+### Off-label Use of GLP-1s: Evidence from Medicare Part D
