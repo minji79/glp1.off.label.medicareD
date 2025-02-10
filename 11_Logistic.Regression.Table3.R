@@ -56,8 +56,9 @@ df <- df %>% mutate(
     BENE_RACE_CD == 2 ~ 2,
     BENE_RACE_CD %in% c(0, 3, 4, 5, 6) ~ 0
   ),
-  year = year(SRVC_DT))
-
+  year = year(SRVC_DT),
+  cvd = ifelse(acute_mi ==1 | hf == 1 | stroke ==1, 1, 0)
+)
 
 # fill NA with 0
 df <- df %>%
@@ -117,8 +118,13 @@ model1 <- glm(offlabel ~ pa + step + uncovered_byD + tier + year + sex + race + 
              data = df, family = binomial)
 summary(model1)
 
+# pooling cvd
+model2 <- glm(offlabel ~ um + uncovered_byD + tier + year + sex + race + region + age + obesity + htn + cvd + alzh, 
+             data = df, family = binomial)
+summary(model2)
+
 # exp(Estimate) and 95%ci
-coefs <- coef(summary(model1)) 
+coefs <- coef(summary(model2)) 
 estimates <- coefs[, 1]  
 std_errors <- coefs[, 2]  
 
