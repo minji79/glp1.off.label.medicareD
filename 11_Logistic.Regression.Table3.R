@@ -152,7 +152,7 @@ print(result)
 #####################################################################################
 
 # No matching; constructing a pre-match matchit object (method=NULL)
-m.out0 <- matchit(um ~ ma_16to20 + tier + sex + age_at_index + race + region_n + obesity + htn + acute_mi + hf + stroke + alzh, 
+m.out0 <- matchit(um ~ uncovered_byD + tier + year + sex + race + region + age + obesity + htn + cvd + alzh, 
                   data = df, method = NULL, distance = "glm")
 
 # Checking balance prior to matching
@@ -164,7 +164,7 @@ summary(m.out0)
 #####################################################################################
 
 #Performs the matching (1:1 PS matching w/o replacement) - BENEFIT_PHASE
-m.out <- matchit(um ~ ma_16to20 + tier + sex + age_at_index + race + region_n + obesity + htn + acute_mi + hf + stroke + alzh, 
+m.out <- matchit(um ~ uncovered_byD + tier + year + sex + race + region + age + obesity + htn + cvd + alzh, 
                   data = df, method = "nearest") 
 
 m.out
@@ -190,7 +190,7 @@ bal.plot(m.out,var.name="age_at_index",which="both")
 #     4.    Caliper Matching
 #####################################################################################
 
-m.out.mahal <- matchit(pa ~ ma_16to20 + TIER_ID + STEP + age_at_index + BENE_RACE_CD + region + obesity + htn + acute_mi + hf + stroke + alzh, 
+m.out.mahal <- matchit(um ~ uncovered_byD + tier + year + sex + race + region + age + obesity + htn + cvd + alzh, 
                   data = df, method = "nearest", 
                        caliper = .1,mahalvars= ~age_at_index + TIER_ID) 
 summary(m.out.mahal,un=FALSE)
@@ -203,7 +203,7 @@ bal.tab(m.out.mahal, stats = c("m", "v", "ks"),      continuous="std",
 love.plot(m.out.mahal,
           var.order = "unadjusted", binary = "std",
           abs = TRUE,
-          line = TRUE,threshold=.2)
+          line = TRUE,threshold=.1)
 
 
 #####################################################################################
@@ -213,7 +213,7 @@ love.plot(m.out.mahal,
 #Note: you need to also install the optmatch package to use full matching
 #install.packages("optmatch") #make sure to install the package the first time using it
 
-m.out.full <- matchit(pa ~ ma_16to20 + TIER_ID + STEP + age_at_index + BENE_RACE_CD + region + obesity + htn + acute_mi + hf + stroke + alzh, 
+m.out.full <- matchit(um ~ uncovered_byD + tier + year + sex + race + region + age + obesity + htn + cvd + alzh, 
                   data = df, method = "full", estimand = "ATT")
 
 m.out.full
@@ -222,7 +222,7 @@ m.out.full
 #     5.    Propensity Score Weighting 
 #####################################################################################
 #Estimate the weights
-w.out <- weightit(pa ~ ma_16to20 + TIER_ID + STEP + age_at_index + BENE_RACE_CD + region + obesity + htn + acute_mi + hf + stroke + alzh, 
+w.out <- weightit(um ~ uncovered_byD + tier + year + sex + race + region + age + obesity + htn + cvd + alzh,
                   data = df, method = "ps", estimand = "ATT") 
 
 w.out
@@ -239,7 +239,7 @@ bal.tab(w.out, stats = c("m", "v", "ks"),      continuous="std",
 love.plot(w.out,
           var.order = "unadjusted", binary = "std",
           abs = TRUE,
-          line = TRUE,threshold=.2)
+          line = TRUE,threshold=.1)
 
 
 #####################################################################################
@@ -252,44 +252,30 @@ nrow(matched.data)  # 7340 individuals
 names(matched.data)
 
 # 2. Preprocessing dataset
-
 str(matched.data)
-# drop variables with one level: step 
-# add numeric variable for char
-# race: 0 = Unknown 1 = Non-Hispanic White 2 = Black (Or African-American) 3 = Other 4 = Asian/Pacific Islander 5 = Hispanic 6 = American Indian / Alaska Native 
-matched.data <- matched.data %>% 
-      mutate(
-        region_n = case_when(
-          region == "Midwest" ~ 1,
-          region == "Northeast" ~ 2,
-          region == "South" ~ 3,
-          region == "West" ~ 4,
-          TRUE ~ NA_real_  
-        )
-      )
 
 # Convert categorical variables to factors & numerics
-cols_to_factor <- c("offlabel", "pa", "ma_16to20", "TIER_ID", "BENE_RACE_CD", "region", "obesity", "htn", "acute_mi", "hf", "stroke", "alzh")
+cols_to_factor <- c("offlabel", "um", "uncovered_byD", "tier", "year", "race", "sex", "region", "age", "obesity", "htn", "cvd", "acute_mi", "hf", "stroke", "alzh")
 matched.data[cols_to_factor] <- lapply(matched.data[cols_to_factor], as.factor)
 matched.data[cols_to_factor] <- lapply(matched.data[cols_to_factor], as.numeric)
 
 
 # 3. Outcome model (difference in means; like a t-test but done using linear regression with no predictors besides treatment status)
-model1 <- glm(offlabel ~ pa, data = matched.data, weights = weights)
+model1 <- glm(offlabel ~ um, data = matched.data, weights = weights)
 coeftest(model1, vcov. = vcovCL, cluster = ~subclass)
 
 
 # 4. Do regression adjustment on the matched samples
 #options(scipen = 999)
 #options(scipen = 0)
-model2 <- glm(offlabel ~ pa + ma_16to20 + TIER_ID + BENE_RACE_CD + region + age_at_index + obesity + htn + acute_mi + hf + stroke + alzh, 
+model2 <- glm(offlabel ~ um + uncovered_byD + tier + year + sex + race + region + age + obesity + htn + cvd + alzh, 
              data = matched.data, weights = weights)
 
 coeftest(model2, vcov. = vcovCL, cluster = ~subclass)
 
 
 # exp(Estimate) and 95%ci
-coefs <- coeftest(model2, vcov. = vcovCL, cluster = ~subclass)
+coefs <- coeftest(model1, vcov. = vcovCL, cluster = ~subclass)
 estimates <- coefs[, 1]  
 std_errors <- coefs[, 2]  
 
