@@ -144,3 +144,30 @@ proc print data = plan19 (obs=10); run;
 
 
 proc print data = plan19.plan_char_2019 (obs=10); run;
+
+
+
+/************************************************************************************
+	4.    co-pay & co-insurance
+************************************************************************************/
+
+%macro yearly(year=, refer=);
+
+proc sql;
+	create table plan_&year as
+ 	select distinct a.*, b.PRE_ICL_COSTSHARE_TYPE
+	from input.glp1users_pde_17to20 as a
+ 	left join &refer as b
+  	on a.PLAN_CNTRCT_REC_ID = b.CONTRACT_ID and a.PLAN_ID = b.PLAN_ID
+   where year(SRVC_DT) = &year;
+quit;
+
+%mend yearly;
+%yearly(year=2022, refer=plan.tier_2022);
+%yearly(year=2021, refer=plan.tier_2021);
+%yearly(year=2020, refer=plan.tier_2020);
+%yearly(year=2019, refer=plan.tier_2019);
+%yearly(year=2018, refer=plan.tier_2018);
+%yearly(year=2017, refer=plan.tier_2017);
+
+
